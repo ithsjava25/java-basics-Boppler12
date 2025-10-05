@@ -40,11 +40,13 @@ public final class ElpriserAPI {
      */
     public record Elpris(
         double sekPerKWh,
-        double eurPerKWh,
+         double eurPerKWh,
         double exr,
         ZonedDateTime timeStart,
         ZonedDateTime timeEnd
-    ) {}
+    ) {
+
+    }
 
     /**
      * Enum för de svenska elprisområdena för typsäkerhet.
@@ -312,13 +314,20 @@ public final class ElpriserAPI {
         if (dagensPriser.isEmpty()) {
             System.out.println("Kunde inte hämta några priser för idag i SE3.");
         } else {
-            System.out.println("\nDagens elpriser för " + Prisklass.SE3 + " (" + dagensPriser.size() + " st värden):");
-            // Skriv bara ut de 3 första för att hålla utskriften kort
-            dagensPriser.stream().limit(3).forEach(pris -> 
-                System.out.printf("Tid: %s, Pris: %.4f SEK/kWh\n", 
-                    pris.timeStart().toLocalTime(), pris.sekPerKWh())
-            );
-            if(dagensPriser.size() > 3) System.out.println("...");
+            System.out.println("\nDagens elpriser för SE3 (" + dagensPriser.size() + " värden):");
+
+            // Skriv ut högst 3 priser
+            int maxVisa = 3;
+            for (int i = 0; i < dagensPriser.size() && i < maxVisa; i++) {
+                ElpriserAPI.Elpris pris = dagensPriser.get(i);
+
+                // Visa hela starttiden som text
+                String tid = pris.timeStart().toString();
+
+                // Visa pris i SEK/kWh med 4 decimaler
+                double prisSEK = pris.sekPerKWh();
+                System.out.println("Tid: " + tid + ", Pris: " + prisSEK + " SEK/kWh");
+            }
         }
 
         // Anropa igen för samma dag, bör nu komma från cachen
